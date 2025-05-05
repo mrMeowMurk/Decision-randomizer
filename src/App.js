@@ -6,6 +6,8 @@ import Options from './components/Options';
 import History from './components/History';
 import ConfirmDialog from './components/ConfirmDialog';
 import ThemeToggle from './components/ThemeToggle';
+import SoundToggle from './components/SoundToggle';
+import useSound from './hooks/useSound';
 
 /**
  * Главный компонент приложения "Рандомайзер решений"
@@ -45,6 +47,12 @@ function App() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [categoryStats, setCategoryStats] = useState({});
+
+  const { 
+    isSoundEnabled, 
+    setIsSoundEnabled, 
+    playSound 
+  } = useSound();
 
   const defaultCategories = {
     'travel': 'Куда поехать',
@@ -168,6 +176,8 @@ function App() {
         return;
       }
 
+      playSound('drum');
+
       let spins = 0;
       const maxSpins = 20;
       const interval = setInterval(() => {
@@ -180,6 +190,8 @@ function App() {
           const finalResult = filteredOptions[Math.floor(Math.random() * filteredOptions.length)];
           setResult(finalResult);
           setIsSpinning(false);
+          
+          setTimeout(() => playSound('fanfare'), 300);
           
           updateCategoryStats(selectedCategory);
           const newHistory = [...history, {
@@ -224,15 +236,22 @@ function App() {
 
   return (
     <div className={`App ${isDarkMode ? 'dark' : 'light'}`}>
-      <ThemeToggle 
-        isDarkMode={isDarkMode} 
-        onToggle={() => {
-          const newTheme = !isDarkMode;
-          setIsDarkMode(newTheme);
-          document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light');
-          localStorage.setItem('randomizer-theme', JSON.stringify(newTheme));
-        }} 
-      />
+      <div className="controls-container">
+        <ThemeToggle 
+          isDarkMode={isDarkMode} 
+          onToggle={() => {
+            const newTheme = !isDarkMode;
+            setIsDarkMode(newTheme);
+            document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light');
+            localStorage.setItem('randomizer-theme', JSON.stringify(newTheme));
+          }} 
+        />
+
+        <SoundToggle
+          isSoundEnabled={isSoundEnabled}
+          onToggle={() => setIsSoundEnabled(!isSoundEnabled)}
+        />
+      </div>
 
       <div className="main-content">
         <div className="content-area">
