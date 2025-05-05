@@ -1,5 +1,26 @@
 import React from 'react';
 
+/**
+ * Компонент диалогового окна подтверждения действия
+ * 
+ * @component
+ * @param {Object} props - Свойства компонента
+ * @param {boolean} props.show - Флаг отображения диалога
+ * @param {Object} props.itemToDelete - Объект с информацией об удаляемом элементе
+ * @param {Object} props.categories - Объект со всеми категориями
+ * @param {Function} props.onConfirm - Обработчик подтверждения действия
+ * @param {Function} props.onCancel - Обработчик отмены действия
+ * @example
+ * return (
+ *   <ConfirmDialog
+ *     show={true}
+ *     itemToDelete={{ item: 'food', type: 'category' }}
+ *     categories={{ food: 'Еда' }}
+ *     onConfirm={() => handleDelete()}
+ *     onCancel={() => setShowDialog(false)}
+ *   />
+ * )
+ */
 const ConfirmDialog = ({ 
   show, 
   itemToDelete, 

@@ -1,5 +1,25 @@
 import React from 'react';
 
+/**
+ * Компонент управления опциями выбранной категории
+ * 
+ * @component
+ * @param {Object} props - Свойства компонента
+ * @param {string} props.selectedCategory - Ключ выбранной категории
+ * @param {Object} props.categories - Объект со всеми категориями
+ * @param {Array} props.options - Массив опций для выбранной категории
+ * @param {string} props.searchTerm - Строка поиска по опциям
+ * @param {Function} props.setSearchTerm - Функция изменения строки поиска
+ * @param {string} props.newOption - Значение поля для новой опции
+ * @param {Function} props.setNewOption - Функция изменения значения новой опции
+ * @param {Function} props.onAddOption - Обработчик добавления новой опции
+ * @param {Function} props.onDeleteOption - Обработчик удаления опции
+ * @param {Array} props.favorites - Массив избранных опций
+ * @param {Function} props.onToggleFavorite - Обработчик добавления/удаления из избранного
+ * @param {boolean} props.isSpinning - Флаг процесса случайного выбора
+ * @param {string} props.result - Результат случайного выбора
+ * @param {Function} props.onRandomSelect - Обработчик запуска случайного выбора
+ */
 const Options = ({
   selectedCategory,
   categories,

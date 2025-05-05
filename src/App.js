@@ -7,6 +7,27 @@ import History from './components/History';
 import ConfirmDialog from './components/ConfirmDialog';
 import ThemeToggle from './components/ThemeToggle';
 
+/**
+ * Главный компонент приложения "Рандомайзер решений"
+ * 
+ * @component
+ * @description
+ * Приложение позволяет пользователям:
+ * - Выбирать категории решений
+ * - Добавлять/удалять пользовательские категории
+ * - Управлять опциями внутри категорий
+ * - Получать случайный результат
+ * - Отмечать избранные варианты
+ * - Просматривать историю выборов
+ * - Переключать темную/светлую тему
+ * 
+ * Состояние приложения сохраняется в localStorage:
+ * - История выборов
+ * - Избранные варианты
+ * - Пользовательские категории
+ * - Настройки темы
+ * - Статистика использования категорий
+ */
 function App() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [options, setOptions] = useState([]);

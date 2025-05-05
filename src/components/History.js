@@ -1,5 +1,23 @@
 import React from 'react';
 
+/**
+ * Компонент отображения истории случайных выборов
+ * 
+ * @component
+ * @param {Object} props - Свойства компонента
+ * @param {Array} props.history - Массив записей истории выборов
+ * @param {boolean} props.showHistory - Флаг отображения панели истории
+ * @param {Function} props.setShowHistory - Функция управления отображением истории
+ * @example
+ * const history = [{ category: 'Еда', result: 'Пицца', timestamp: '01.01.2024 12:00' }];
+ * return (
+ *   <History 
+ *     history={history}
+ *     showHistory={true}
+ *     setShowHistory={setShowHistory}
+ *   />
+ * )
+ */
 const History = ({ history, showHistory, setShowHistory }) => {
   return (
     <div className="history-sidebar">
