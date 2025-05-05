@@ -1113,30 +1113,34 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 8px;
-  margin-left: 10px;
-  background: var(--gradient-accent);
-  color: white;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  margin-left: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-color);
+  border-radius: 11px;
+  font-size: 0.8rem;
+  font-weight: 500;
   transition: all var(--animation-speed) var(--animation-function);
-  box-shadow: 0 2px 4px var(--shadow-color);
-  position: relative;
-  overflow: hidden;
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(4px);
 }
 
 .category-btn.active .category-usage-badge {
-  background: var(--surface-color);
-  color: var(--primary-color);
-  border: 1px solid currentColor;
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.category-btn-wrapper:hover .category-usage-badge {
-  transform: scale(1.1);
-  box-shadow: 0 3px 6px var(--shadow-color);
+.category-btn:hover .category-usage-badge {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Убираем подсказки снизу */
+.category-stats {
+  display: none;
 }
 
 /* Обновляем стили для кнопки категории */
@@ -1186,4 +1190,9 @@ button {
 .category-btn.active {
   color: white;
   transform: translateY(-2px);
+}
+
+/* Удаляем стили для уведомлений */
+.toast-notification {
+  display: none;
 }

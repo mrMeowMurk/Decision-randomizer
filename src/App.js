@@ -17,8 +17,6 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
   const [categoryStats, setCategoryStats] = useState({});
 
   const defaultCategories = {
@@ -66,27 +64,11 @@ function App() {
     localStorage.setItem('randomizer-theme', JSON.stringify(newTheme));
   };
 
-  const showToastMessage = (message) => {
-    setToastMessage(message);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-  };
-
-  const updateCategoryStats = (category) => {
-    const newStats = {
-      ...categoryStats,
-      [category]: (categoryStats[category] || 0) + 1
-    };
-    setCategoryStats(newStats);
-    localStorage.setItem('randomizer-stats', JSON.stringify(newStats));
-  };
-
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
     setOptions(defaultOptions[category] || []);
     setResult('');
     setSearchTerm('');
-    showToastMessage(`Выбрана категория: ${categories[category]}`);
   };
 
   const addOption = () => {
@@ -143,10 +125,8 @@ function App() {
 
     if (itemToDelete.type === 'category') {
       removeCategory(itemToDelete.item);
-      showToastMessage('Категория удалена');
     } else if (itemToDelete.type === 'option') {
       removeOption(itemToDelete.item);
-      showToastMessage('Вариант удален');
     }
 
     setShowConfirmDialog(false);
@@ -190,8 +170,6 @@ function App() {
           }].slice(-10);
           setHistory(newHistory);
           localStorage.setItem('randomizer-history', JSON.stringify(newHistory));
-          
-          showToastMessage(`Выбрано: ${finalResult}`);
         }
       }, 100);
     }
@@ -214,6 +192,15 @@ function App() {
       setOptions([]);
       setResult('');
     }
+  };
+
+  const updateCategoryStats = (category) => {
+    const newStats = {
+      ...categoryStats,
+      [category]: (categoryStats[category] || 0) + 1
+    };
+    setCategoryStats(newStats);
+    localStorage.setItem('randomizer-stats', JSON.stringify(newStats));
   };
 
   return (
@@ -449,18 +436,6 @@ function App() {
               }}>Отмена</button>
             </div>
           </div>
-        </div>
-      )}
-
-      {showToast && (
-        <div className="toast-notification">
-          {toastMessage}
-        </div>
-      )}
-
-      {selectedCategory && categoryStats[selectedCategory] > 0 && (
-        <div className="category-stats">
-          Использовано {categoryStats[selectedCategory]} раз
         </div>
       )}
     </div>
