@@ -95,11 +95,11 @@ decision-randomizer/
 
 Проект распространяется под лицензией MIT. Подробности в файле [LICENSE](LICENSE).
 
-## 👥 Авторы
+## 📞 Поддержка
 
-- [Ваше имя](https://github.com/mrMeowMurk)
+Если у вас возникли вопросы или проблемы:
+- Напишите в Telegram: @MrMeowMurk
 
-## 📞 Контакты
-
-- GitHub: [@mrMeowMurk](https://github.com/mrMeowMurk)
-- Telegram: [@MrMeowMurk]
+<div align="center">
+Сделано с ❤️ MeowMurk
+</div>
