@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import Welcome from './components/Welcome';
+import Categories from './components/Categories';
+import Options from './components/Options';
+import History from './components/History';
+import ConfirmDialog from './components/ConfirmDialog';
+import ThemeToggle from './components/ThemeToggle';
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -57,13 +63,6 @@ function App() {
     if (savedStats) setCategoryStats(JSON.parse(savedStats));
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = !isDarkMode;
-    setIsDarkMode(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light');
-    localStorage.setItem('randomizer-theme', JSON.stringify(newTheme));
-  };
-
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
     setOptions(defaultOptions[category] || []);
@@ -71,21 +70,38 @@ function App() {
     setSearchTerm('');
   };
 
-  const addOption = () => {
+  const handleAddOption = () => {
     if (newOption.trim() && selectedCategory) {
       const newOptionText = newOption.trim();
       setOptions(prev => [...prev, newOptionText]);
       setNewOption('');
       
-      // Сохраняем опцию в localStorage для данной категории
       const savedOptions = JSON.parse(localStorage.getItem(`randomizer-options-${selectedCategory}`) || '[]');
       localStorage.setItem(`randomizer-options-${selectedCategory}`, JSON.stringify([...savedOptions, newOptionText]));
     }
   };
 
+  const handleDeleteOption = (index, type) => {
+    setItemToDelete({ item: index, type });
+    setShowConfirmDialog(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!itemToDelete) return;
+
+    if (itemToDelete.type === 'category') {
+      removeCategory(itemToDelete.item);
+    } else if (itemToDelete.type === 'option') {
+      removeOption(itemToDelete.item);
+    }
+
+    setShowConfirmDialog(false);
+    setItemToDelete(null);
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      addOption();
+      handleAddOption();
     }
   };
 
@@ -113,24 +129,6 @@ function App() {
       setNewCategory({ name: '', key: '' });
       setShowAddCategory(false);
     }
-  };
-
-  const confirmDelete = (item, type) => {
-    setItemToDelete({ item, type });
-    setShowConfirmDialog(true);
-  };
-
-  const handleDelete = () => {
-    if (!itemToDelete) return;
-
-    if (itemToDelete.type === 'category') {
-      removeCategory(itemToDelete.item);
-    } else if (itemToDelete.type === 'option') {
-      removeOption(itemToDelete.item);
-    }
-
-    setShowConfirmDialog(false);
-    setItemToDelete(null);
   };
 
   const getRandomOption = () => {
@@ -205,239 +203,68 @@ function App() {
 
   return (
     <div className={`App ${isDarkMode ? 'dark' : 'light'}`}>
-      <div className="theme-toggle">
-        <button onClick={toggleTheme} className="theme-toggle-btn">
-          {isDarkMode ? '☀️' : '🌙'}
-        </button>
-      </div>
+      <ThemeToggle 
+        isDarkMode={isDarkMode} 
+        onToggle={() => {
+          const newTheme = !isDarkMode;
+          setIsDarkMode(newTheme);
+          document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light');
+          localStorage.setItem('randomizer-theme', JSON.stringify(newTheme));
+        }} 
+      />
 
       <div className="main-content">
         <div className="content-area">
-          <div className="welcome-section">
-            <div className="welcome-title">
-              <span className="welcome-emoji">🎲</span>
-              <h1>Рандомайзер решений</h1>
-            </div>
-            <div className="welcome-description">
-              <p className="tagline">Сложный выбор? Доверьтесь случаю</p>
-              <div className="features">
-                <span className="feature-item">✨ Умный выбор</span>
-                <span className="feature-divider">•</span>
-                <span className="feature-item">🎯 Точность</span>
-                <span className="feature-divider">•</span>
-                <span className="feature-item">🚀 Скорость</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="categories-wrapper">
-            <div className="categories">
-              {Object.entries(categories).map(([key, value]) => (
-                <div key={key} className="category-btn-wrapper">
-                  <button
-                    className={`category-btn ${selectedCategory === key ? 'active' : ''}`}
-                    onClick={() => handleCategoryChange(key)}
-                  >
-                    <span className="category-name">{value}</span>
-                    {categoryStats[key] > 0 && (
-                      <span className="category-usage-badge" title="Количество использований">
-                        {categoryStats[key]}
-                      </span>
-                    )}
-                  </button>
-                  {!defaultCategories.hasOwnProperty(key) && (
-                    <button
-                      className="remove-category"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        confirmDelete(key, 'category');
-                      }}
-                      title="Удалить категорию"
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
-              <button 
-                className="add-category-btn"
-                onClick={() => setShowAddCategory(!showAddCategory)}
-              >
-                {showAddCategory ? '×' : '+ Добавить категорию'}
-              </button>
-            </div>
-          </div>
-
-          {showAddCategory && (
-            <div className="add-category-form">
-              <div className="form-group">
-                <input
-                  type="text"
-                  placeholder="Ключ категории (англ.)"
-                  value={newCategory.key}
-                  onChange={(e) => setNewCategory({ ...newCategory, key: e.target.value })}
-                />
-                <input
-                  type="text"
-                  placeholder="Название категории"
-                  value={newCategory.name}
-                  onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                />
-                <button onClick={addCustomCategory}>Добавить</button>
-              </div>
-            </div>
-          )}
+          <Welcome />
+          
+          <Categories 
+            categories={categories}
+            selectedCategory={selectedCategory}
+            categoryStats={categoryStats}
+            defaultCategories={defaultCategories}
+            onCategoryChange={handleCategoryChange}
+            onDeleteCategory={handleDeleteOption}
+            showAddCategory={showAddCategory}
+            setShowAddCategory={setShowAddCategory}
+          />
 
           {selectedCategory && (
-            <div className="options-section">
-              <div className="section-header">
-                <h2>{categories[selectedCategory]}</h2>
-                <div className="section-actions">
-                  <div className="search-bar">
-                    <input
-                      type="text"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="🔍 Поиск по вариантам..."
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="add-option">
-                <input
-                  type="text"
-                  value={newOption}
-                  onChange={(e) => setNewOption(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="✨ Добавить новый вариант"
-                />
-                <button onClick={addOption}>Добавить</button>
-              </div>
-
-              <div className="options-list">
-                {filteredOptions.map((option, index) => (
-                  <div key={index} className="option-item">
-                    <span>{option}</span>
-                    <div className="option-actions">
-                      <button 
-                        className={`favorite-btn ${favorites.includes(option) ? 'active' : ''}`}
-                        onClick={() => toggleFavorite(option)}
-                      >
-                        ★
-                      </button>
-                      <button 
-                        className="remove-option"
-                        onClick={() => confirmDelete(index, 'option')}
-                        title="Удалить вариант"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button 
-                className={`random-btn ${isSpinning ? 'spinning' : ''}`} 
-                onClick={getRandomOption}
-                disabled={isSpinning || filteredOptions.length === 0}
-              >
-                {isSpinning ? '🎲 Выбираем...' : '🎲 Выбрать случайный вариант'}
-              </button>
-
-              {result && (
-                <div className={`result ${isSpinning ? 'spinning' : ''}`}>
-                  <h3>Результат:</h3>
-                  <div className="result-text">{result}</div>
-                  {!favorites.includes(result) && (
-                    <button 
-                      className="add-to-favorites"
-                      onClick={() => toggleFavorite(result)}
-                    >
-                      ⭐ Добавить в избранное
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {favorites.length > 0 && (
-            <div className="favorites-section">
-              <h3>⭐ Избранное</h3>
-              <div className="favorites-list">
-                {favorites.map((favorite, index) => (
-                  <div key={index} className="favorite-item">
-                    <span>{favorite}</span>
-                    <button 
-                      className="remove-favorite"
-                      onClick={() => toggleFavorite(favorite)}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <Options 
+              selectedCategory={selectedCategory}
+              categories={categories}
+              options={options}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              newOption={newOption}
+              setNewOption={setNewOption}
+              onAddOption={handleAddOption}
+              onDeleteOption={handleDeleteOption}
+              favorites={favorites}
+              onToggleFavorite={toggleFavorite}
+              isSpinning={isSpinning}
+              result={result}
+              onRandomSelect={getRandomOption}
+            />
           )}
         </div>
 
-        <div className="history-sidebar">
-          <div className="history-header">
-            <h3>📝 История выборов</h3>
-            <button 
-              className="toggle-history-btn"
-              onClick={() => setShowHistory(!showHistory)}
-            >
-              {showHistory ? 'Скрыть' : 'Показать'}
-            </button>
-          </div>
-          
-          {showHistory && history.length > 0 && (
-            <div className="history-content">
-              {history.map((item, index) => (
-                <div key={index} className="history-item">
-                  <div className="history-item-category">{item.category}</div>
-                  <div className="history-item-result">{item.result}</div>
-                  <div className="history-item-time">{item.timestamp}</div>
-                </div>
-              ))}
-            </div>
-          )}
-          {(!showHistory || history.length === 0) && (
-            <div className="history-empty">
-              {history.length === 0 ? 'История пуста' : 'История скрыта'}
-            </div>
-          )}
-        </div>
+        <History 
+          history={history}
+          showHistory={showHistory}
+          setShowHistory={setShowHistory}
+        />
       </div>
 
-      {showConfirmDialog && (
-        <div className="confirm-dialog" onClick={(e) => {
-          if (e.target.className === 'confirm-dialog') {
-            setShowConfirmDialog(false);
-            setItemToDelete(null);
-          }
-        }}>
-          <div className="confirm-dialog-content">
-            <h3>Подтверждение удаления</h3>
-            <p>
-              {itemToDelete?.type === 'category' 
-                ? `Вы уверены, что хотите удалить категорию "${categories[itemToDelete.item]}"?`
-                : 'Вы уверены, что хотите удалить этот элемент?'}
-            </p>
-            <div className="confirm-dialog-buttons">
-              <button onClick={handleDelete}>Удалить</button>
-              <button onClick={() => {
-                setShowConfirmDialog(false);
-                setItemToDelete(null);
-              }}>Отмена</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog 
+        show={showConfirmDialog}
+        itemToDelete={itemToDelete}
+        categories={categories}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => {
+          setShowConfirmDialog(false);
+          setItemToDelete(null);
+        }}
+      />
     </div>
   );
 }
